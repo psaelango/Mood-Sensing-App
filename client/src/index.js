@@ -2,29 +2,34 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
   BrowserRouter,
-  Routes,
-  Route,
+  // Routes,
+  // Route,
 } from "react-router-dom";
-import './index.css';
+import { store } from './store/store';
+import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import UploadMood from './routes/UploadMood';
-import MoodDistribution from './routes/MoodDistrubtion';
-import NearByHappyMood from './routes/NearByHappyMood';
 import NavigationBar from './components/NavigationBar';
+// import Login from './pages/Login';
+// import Register from './pages/Register';
+import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <NavigationBar></NavigationBar>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/upload-mood" element={<UploadMood />} />
-        <Route path="/mood-distribution" element={<MoodDistribution />} />
-        <Route path="/nearby-happy-mood" element={<NearByHappyMood />} />
-      </Routes>
-    </BrowserRouter>,
+    <Provider store={store}>
+      <BrowserRouter>
+        <NavigationBar></NavigationBar>
+        <App />
+        {/* <Routes>
+          <Route path="/" element={<App />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+        </Routes> */}
+      </BrowserRouter>
+      <ToastContainer />
+    </Provider>
   </React.StrictMode>
 );
 

@@ -1,9 +1,13 @@
 import React, { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types'; 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { toast } from 'react-toastify';
 
 function MoodUploadForm({lat = '', lng = ''}) {
+  const { user } = useSelector((state) => state.auth)
+  console.log('user = ', user);
   const usernameInput = useRef(null);
   const moodInput = useRef(null);
   const latInput = useRef(null);
@@ -17,13 +21,14 @@ function MoodUploadForm({lat = '', lng = ''}) {
     const lat = latInput?.current?.value;
     const lng = lngInput?.current?.value;
     if (!username || !mood || !lat || !lng) {
-      alert('Need all values to continue');
+      toast.error('Need all values to continue');
     } else {
       const data = {username, mood, lat, lng};
-      fetch('http://localhost:4000/upload-mood', {
+      fetch('http://localhost:4000/api/upload-mood', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify(data),
       })
@@ -36,7 +41,7 @@ function MoodUploadForm({lat = '', lng = ''}) {
         })
         .catch((error) => {
           console.error('Error:', error);
-          alert('Something Went Wrong!!! Check Console...')
+          toast.error('Something Went Wrong!!! Check Console...')
         });
     }
     e.stopPropagation();
@@ -78,8 +83,8 @@ function MoodUploadForm({lat = '', lng = ''}) {
 }
 
 MoodUploadForm.propTypes = {  
-  lat: PropTypes.string,  
-  lng: PropTypes.string
+  lat: PropTypes.number,  
+  lng: PropTypes.number
 }
 
 MoodUploadForm.defaultProps = {

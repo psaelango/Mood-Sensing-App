@@ -1,12 +1,16 @@
 
 import React, { useRef, useEffect } from "react";
-import MapboxGl from "mapbox-gl";
+import { useSelector } from 'react-redux';
+import MapboxGl from 'mapbox-gl';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
+import { toast } from 'react-toastify';
 
 export default function MoodDistribution() {
+  const { user } = useSelector((state) => state.auth)
+  console.log('user = ', user);
   const usernameInput = useRef(null);
   const formRef = useRef(null);
   const Mapcontainer = useRef(null);
@@ -19,7 +23,11 @@ export default function MoodDistribution() {
     while(mapMarkers.length > 0){
       mapMarkers[0].parentNode.removeChild(mapMarkers[0]);
     }
-    fetch(`http://localhost:4000/mood-frequency/${username}`)
+    fetch(`http://localhost:4000/api/mood-frequency/${username}`, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      }
+    })
       .then((response) => response.json())
       .then((data) => {
         console.log('Success:', data);
@@ -27,7 +35,6 @@ export default function MoodDistribution() {
 
         // add markers to map
         let bounds = new MapboxGl.LngLatBounds();
-        let markersList = [];
         for (let i = 0; i < data.length; i++) {
           const elem = data[i];
           const marker = document.createElement('div');
@@ -49,11 +56,15 @@ export default function MoodDistribution() {
           bounds.extend(elem.location.coordinates);
         }
         console.log('map = ', map);
-        map.fitBounds(bounds);
+        if (data.length > 0) {
+          map.fitBounds(bounds);
+        } else {
+          toast.info('No Records found for the user');
+        }
       })
       .catch((error) => {
         console.error('Error:', error);
-        alert('Something Went Wrong!!! Check Console...')
+        toast.error('Something Went Wrong!!! Check Console...')
       });
     e.stopPropagation();
   }
@@ -74,7 +85,7 @@ export default function MoodDistribution() {
 
   useEffect(() => {
     initMap();
-  }, []);
+  });
 
   return (
     <div style={{display: 'flex'}}>
