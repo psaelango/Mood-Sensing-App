@@ -1,18 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {
-  BrowserRouter,
-  // Routes,
-  // Route,
-} from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import NavigationBar from './components/NavigationBar';
-// import Login from './pages/Login';
-// import Register from './pages/Register';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -22,11 +16,6 @@ root.render(
       <BrowserRouter>
         <NavigationBar></NavigationBar>
         <App />
-        {/* <Routes>
-          <Route path="/" element={<App />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-        </Routes> */}
       </BrowserRouter>
       <ToastContainer />
     </Provider>

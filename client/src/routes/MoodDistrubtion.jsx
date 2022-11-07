@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import { toast } from 'react-toastify';
+import Alert from 'react-bootstrap/Alert';
 
 export default function MoodDistribution() {
   const { user } = useSelector((state) => state.auth)
@@ -18,12 +19,12 @@ export default function MoodDistribution() {
 
   const onFormSubmit = (e) => {
     e.preventDefault();
-    const username = usernameInput?.current?.value;
+    const userName = usernameInput?.current?.value;
     const mapMarkers = document.getElementsByClassName('mapboxgl-marker');
     while(mapMarkers.length > 0){
       mapMarkers[0].parentNode.removeChild(mapMarkers[0]);
     }
-    fetch(`http://localhost:4000/api/mood-frequency/${username}`, {
+    fetch(`http://localhost:4000/api/mood-frequency/${userName}`, {
       headers: {
         Authorization: `Bearer ${user.token}`,
       }
@@ -52,12 +53,20 @@ export default function MoodDistribution() {
             default:
               break;
           }
-          new MapboxGl.Marker(marker).setLngLat(elem.location.coordinates).addTo(map);
+          new MapboxGl.Marker(marker)
+            .setLngLat(elem.location.coordinates)
+            .setPopup(
+              new MapboxGl.Popup({ offset: 25 })
+              .setHTML(
+                `<pre>${elem.locationName}</pre>`
+              )
+            )
+            .addTo(map);
           bounds.extend(elem.location.coordinates);
         }
         console.log('map = ', map);
         if (data.length > 0) {
-          map.fitBounds(bounds);
+          map.fitBounds(bounds, {padding: 100});
         } else {
           toast.info('No Records found for the user');
         }
@@ -88,52 +97,58 @@ export default function MoodDistribution() {
   });
 
   return (
-    <div style={{display: 'flex'}}>
-      <div style={{margin: '20px', flex: 1}}>
-        <Form onSubmit={onFormSubmit} ref={formRef}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>User Name</Form.Label>
-            <Form.Control type="text" ref={usernameInput} defaultValue='' placeholder="Note: Case Sensitive" required/>
-            <Form.Text className="text-muted">
-              Usernames are case sensitive. Enter correctly to get records properly
-            </Form.Text>
-          </Form.Group>
-          <Button variant="primary" type="submit" > 
-            Submit
-          </Button>
-        </Form>
-        <Row style={{marginTop: '50px'}}>
-          <Card style={{ width: '9rem' }}>
-            <Card.Img variant="top" src="./Happy_Marker.png" />
-            <Card.Body>
-              <Card.Title>Happy</Card.Title>
-              <Card.Text>
-                This emoji denotes Happy Mood
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card style={{ width: '9rem' }}>
-            <Card.Img variant="top" src="./Sad_Marker.png" />
-            <Card.Body>
-              <Card.Title>Sad</Card.Title>
-              <Card.Text>
-                This emoji denotes Sad Mood
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card style={{ width: '9rem' }}>
-            <Card.Img variant="top" src="./Neutral_Marker.png" />
-            <Card.Body>
-              <Card.Title>Neutral</Card.Title>
-              <Card.Text>
-                This emoji denotes Neutral Mood
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Row>
-      </div>
-      <div style={{position: 'relative', width: '900px', height: '500px', margin: '20px', flex: 2}}>
-        <div ref={Mapcontainer} id="map" style={{position: 'relative', width: 'inherit', height: 'inherit'}}/>
+    
+    <div>
+      <Alert key='primary' variant='primary'>
+        Note: You can search distribution for any user if you know their user name
+      </Alert>
+      <div style={{display: 'flex'}}>
+        <div style={{margin: '20px', flex: 1}}>
+          <Form onSubmit={onFormSubmit} ref={formRef}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>User Name</Form.Label>
+              <Form.Control type="text" ref={usernameInput} defaultValue='' placeholder="Note: Case Sensitive" required/>
+              <Form.Text className="text-muted">
+                Usernames are case sensitive. Enter correctly to get records properly
+              </Form.Text>
+            </Form.Group>
+            <Button variant="primary" type="submit" > 
+              Submit
+            </Button>
+          </Form>
+          <Row style={{marginTop: '50px'}}>
+            <Card style={{ width: '9rem' }}>
+              <Card.Img variant="top" src="./Happy_Marker.png" />
+              <Card.Body>
+                <Card.Title>Happy</Card.Title>
+                <Card.Text>
+                  This emoji denotes Happy Mood
+                </Card.Text>
+              </Card.Body>
+            </Card>
+            <Card style={{ width: '9rem' }}>
+              <Card.Img variant="top" src="./Sad_Marker.png" />
+              <Card.Body>
+                <Card.Title>Sad</Card.Title>
+                <Card.Text>
+                  This emoji denotes Sad Mood
+                </Card.Text>
+              </Card.Body>
+            </Card>
+            <Card style={{ width: '9rem' }}>
+              <Card.Img variant="top" src="./Neutral_Marker.png" />
+              <Card.Body>
+                <Card.Title>Neutral</Card.Title>
+                <Card.Text>
+                  This emoji denotes Neutral Mood
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Row>
+        </div>
+        <div style={{position: 'relative', width: '900px', height: '500px', margin: '20px', flex: 2}}>
+          <div ref={Mapcontainer} id="map" style={{position: 'relative', width: 'inherit', height: 'inherit'}}/>
+        </div>
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types'; 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Spinner from 'react-bootstrap/Spinner';
 import { toast } from 'react-toastify';
 
-function MoodUploadForm({lat = '', lng = ''}) {
+function MoodUploadForm({lat = '', lng = '', locationName = ''}) {
+  const [isUploading, setIsUploading] = useState(false);
   const { user } = useSelector((state) => state.auth)
   console.log('user = ', user);
   const usernameInput = useRef(null);
@@ -16,14 +18,13 @@ function MoodUploadForm({lat = '', lng = ''}) {
 
   const onFormSubmit = (e) => {
     e.preventDefault();
-    const username = usernameInput?.current?.value;
+    const userName = usernameInput?.current?.value;
     const mood = moodInput?.current?.value;
-    const lat = latInput?.current?.value;
-    const lng = lngInput?.current?.value;
-    if (!username || !mood || !lat || !lng) {
+    if (!userName || !mood || !lat || !lng) {
       toast.error('Need all values to continue');
     } else {
-      const data = {username, mood, lat, lng};
+      setIsUploading(true);
+      const data = {userName, mood, lat, lng, locationName};
       fetch('http://localhost:4000/api/upload-mood', {
         method: 'POST',
         headers: {
@@ -35,6 +36,8 @@ function MoodUploadForm({lat = '', lng = ''}) {
         .then((response) => response.json())
         .then((data) => {
           console.log('Success:', data);
+          toast.success(`${mood} mood at ${locationName} is added to your list`);
+          setIsUploading(false);
           // formRef.current.reset();
           // latInput.value('');
           // lngInput.value('');
@@ -42,6 +45,7 @@ function MoodUploadForm({lat = '', lng = ''}) {
         .catch((error) => {
           console.error('Error:', error);
           toast.error('Something Went Wrong!!! Check Console...')
+          setIsUploading(false);
         });
     }
     e.stopPropagation();
@@ -75,8 +79,8 @@ function MoodUploadForm({lat = '', lng = ''}) {
         <Form.Control ref={lngInput} value={lng} required disabled />
       </Form.Group>
 
-      <Button variant="primary" type="submit" > 
-        Submit
+      <Button variant="primary" type="submit" disabled={isUploading ? true : false}> 
+        {isUploading ? <Spinner animation="border" role="status" /> : 'Submit'}
       </Button>
     </Form>
   );
@@ -84,12 +88,14 @@ function MoodUploadForm({lat = '', lng = ''}) {
 
 MoodUploadForm.propTypes = {  
   lat: PropTypes.number,  
-  lng: PropTypes.number
+  lng: PropTypes.number,
+  locationName: PropTypes.string,
 }
 
 MoodUploadForm.defaultProps = {
   lat: '',
-  lng: ''
+  lng: '',
+  locationName: ''
 }
 
 export default MoodUploadForm;

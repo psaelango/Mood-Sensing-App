@@ -231,3 +231,13 @@ h3 {
   border-radius: 50%;
   cursor: pointer;
 }
+
+.mapboxgl-popup {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+}

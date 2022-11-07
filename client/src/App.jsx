@@ -2,11 +2,9 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
-  // BrowserRouter,
   Routes,
   Route,
 } from "react-router-dom";
-// import NavigationBar from './components/NavigationBar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './routes/Home';

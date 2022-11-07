@@ -48,7 +48,7 @@ export default function NearByHappyMood() {
       if (e.result.center && e.result.center.length === 2) {
         const lat = e.result.center[1];
         const lng = e.result.center[0];
-        fetch(`http://localhost:4000/api/nearby-locations/happy?lat=${lat}&lng=${lng}`, {
+        fetch(`http://localhost:4000/api/nearby-locations/Happy?lat=${lat}&lng=${lng}`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           }
@@ -63,12 +63,20 @@ export default function NearByHappyMood() {
             const elem = data[i];
             const marker = document.createElement('div');
             marker.className = 'map-marker happy-marker';
-            new MapboxGl.Marker(marker).setLngLat(elem.location.coordinates).addTo(map);
+            new MapboxGl.Marker(marker)
+            .setLngLat(elem.location.coordinates)
+            .setPopup(
+              new MapboxGl.Popup({ offset: 25 })
+              .setHTML(
+                `<pre>${elem.locationName}</pre>`
+              )
+            )
+            .addTo(map);
             bounds.extend(elem.location.coordinates);
           }
           console.log('map = ', map);
           if (data.length > 0) {
-            map.fitBounds(bounds);
+            map.fitBounds(bounds, {padding: 100});
           } else {
             toast.info('No locations near where user mood is happy');
           }
