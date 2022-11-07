@@ -6,6 +6,7 @@ import AppInfo from "../accordions/AppInfo";
 import UploadMoodInfo from "../accordions/UploadMoodInfo";
 import MoodDistributionInfo from "../accordions/MoodDistributionInfo";
 import NearByHappyMoodInfo from "../accordions/NearByHappyMoodInfo";
+import SwaggerInfo from "../accordions/SwaggerInfo";
 
 function Home() {
   return (
@@ -16,6 +17,7 @@ function Home() {
             <UploadMoodInfo />
             <MoodDistributionInfo />
             <NearByHappyMoodInfo />
+            <SwaggerInfo />
           </Accordion>
         </Row>
     </Container>
