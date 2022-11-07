@@ -1,0 +1,226 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+     "version": "1.0.0",
+     "title": "Mood Sense App",
+     "description": " Mood-sensing capability to collect mood data and provide insights:",
+     "termsOfService": "http://swagger.io/terms/",
+     "contact": {
+        "name": "Prasanna Elangovan",
+        "email": "psaelango@gmail.com",
+        "url": "https://www.linkedin.com/in/prasanna-elangovan-132b3087/"
+     },
+     "license": {
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+     }
+  },
+  "servers": [
+     {
+        "url": "http://localhost:4000/api"
+     }
+  ],
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/mood-frequency/{userName}": {
+      "get": {
+          "tags": [
+            "Moods"
+          ],
+          "summary": "Returns all moods in all locations",
+          "description": "Returns all moods (Happy, Sad, Neutral) in all locations for a requested user name",
+          "operationId": "moodFrequency",
+          "responses": {
+            "200": {
+                "description": "moods response",
+                "content": {
+                  "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Moods"
+                        }
+                      }
+                  }
+                }
+            },
+            "default": {
+                "description": "unexpected error",
+                "content": {
+                  "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                  }
+                }
+            }
+          }
+      }
+    },
+    "/nearby-locations/{mood}?lat={lat}&lng={lng}": {
+      "get": {
+        "tags": [
+            "Moods"
+        ],
+        "summary": "Returns nearby locations",
+        "description": "Returns nearby locations for a requested moods (Happy, Sad, Neutral) and coordinates",
+        "operationId": "nearByLocations",
+        "responses": {
+            "200": {
+              "description": "moods response",
+              "content": {
+                  "application/json": {
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Moods"
+                        }
+                    }
+                  }
+              }
+            },
+            "default": {
+              "description": "unexpected error",
+              "content": {
+                  "application/json": {
+                    "schema": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                  }
+              }
+            }
+        }
+      }
+    },
+   "/upload-mood": {
+      "post": {
+        "tags": [
+          "Moods"
+        ],
+        "summary": "Returns all moods in all locations",
+        "description": "Returns all moods (Happy, Sad, Neutral) in all locations for a requested user name",
+        "operationId": "moodFrequency",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "userName": "userName",
+                "mood": "Happy",
+                "lat": 90,
+                "lng": -90,
+                "locationName": "locationName"
+              }
+            }
+          }
+        },
+        "responses": {
+            "200": {
+              "description": "moods response",
+              "content": {
+                  "application/json": {
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Moods"
+                        }
+                    }
+                  }
+              }
+            },
+            "default": {
+              "description": "unexpected error",
+              "content": {
+                  "application/json": {
+                    "schema": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                  }
+              }
+            }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes":{
+      "JWT": {
+        "description": "",
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "Moods": {
+          "allOf": [
+            {
+                "$ref": "#/components/schemas/MoodsInfo"
+            },
+            {
+                "type": "object",
+                "required": [
+                  "_id"
+                ],
+                "properties": {
+                  "_id": {
+                      "type": "integer",
+                      "format": "int64"
+                  }
+                }
+            }
+          ]
+      },
+      "MoodsInfo": {
+          "type": "object",
+          "required": [
+            "userName",
+            "mood",
+            "type",
+            "coordinates"
+          ],
+          "properties": {
+            "userName": {
+                "type": "string"
+            },
+            "mood": {
+                "type": "string",
+                "enum": ["Happy", "Sad", "Neutral"]
+            },
+            "locationName": {
+              "type": "string"
+            },
+            "location": {
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["Point"]
+                },
+                "coordinates": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+
+          }
+      },
+      "Error": {
+          "type": "object",
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+                "type": "string"
+            }
+          }
+      }
+    }
+  }
+}

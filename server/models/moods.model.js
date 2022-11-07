@@ -13,7 +13,7 @@ const pointCoordinateSchema = new mongoose.Schema({
 });
 
 const Moods = new mongoose.Schema({
-  username: {
+  userName: {
     type: String,
     required : true,
   },
@@ -21,6 +21,9 @@ const Moods = new mongoose.Schema({
     type: String,
     enum: ['Happy', 'Sad', 'Neutral'],
     required : true,
+  },
+  locationName: {
+    type: String,
   },
   location: {
     type: pointCoordinateSchema,

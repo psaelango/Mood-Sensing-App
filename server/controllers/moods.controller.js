@@ -3,7 +3,7 @@ const logger = require('../logger');
 const Moods = require('../models/moods.model');
 
 // @desc    Get moods for given user
-// @route   GET /api/mood-frequency/:username
+// @route   GET /api/mood-frequency/:userName
 // @access  Private
 const getMoods = asyncHandler(async (req, res) => {
   // Check for user
@@ -12,7 +12,7 @@ const getMoods = asyncHandler(async (req, res) => {
     throw new Error('User not found')
   }
   
-	Moods.find({username: req.params.username})
+	Moods.find({userName: req.params.userName})
 		.then(item => res.send(item))
 		.catch(err => res.status(400).json(err));
 })
@@ -46,8 +46,8 @@ const getNearByMoodLocations = asyncHandler(async (req, res) => {
 				$maxDistance: 1000000,
 			}
 		},
-		"username": "123",
-		"mood": "Happy",
+		"userName": req.user.name,
+		"mood": req.params.mood,
  	})
 	.then(item => res.send(item))
 	.catch(error => {
@@ -67,10 +67,11 @@ const postMoods = asyncHandler(async (req, res) => {
   }
 
   try {
-		const { username, mood, lat, lng } = req.body;
+		const { userName, mood, lat, lng, locationName } = req.body;
 		const data = {
-			username,
+			userName,
 			mood,
+			locationName,
 			location: {
 				type: 'Point',
 				coordinates: [lng, lat]

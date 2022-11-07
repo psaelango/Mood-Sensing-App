@@ -8,7 +8,7 @@ const {
 
 const { protect } = require('../middleware/auth.middleware')
 
-router.route('/mood-frequency/:username').get(protect, getMoods)
+router.route('/mood-frequency/:userName').get(protect, getMoods)
 router.route('/nearby-locations/:mood').get(protect, getNearByMoodLocations)
 router.route('/upload-mood').post(protect, postMoods)
 
