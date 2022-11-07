@@ -1,12 +1,11 @@
 const asyncHandler = require('express-async-handler');
-
+const logger = require('../logger');
 const Moods = require('../models/moods.model');
 
 // @desc    Get moods for given user
 // @route   GET /api/mood-frequency/:username
 // @access  Private
 const getMoods = asyncHandler(async (req, res) => {
-  console.log('req = ', req.user);
   // Check for user
   if (!req.user) {
     res.status(401)
@@ -27,7 +26,6 @@ const getNearByMoodLocations = asyncHandler(async (req, res) => {
     res.status(401)
     throw new Error('User not found')
   }
-	console.log('req.user = ', req.user)
   
 	const lat = Number(req.query.lat);
 	const lng = Number(req.query.lng);
@@ -37,18 +35,7 @@ const getNearByMoodLocations = asyncHandler(async (req, res) => {
 		res.send('Latitude and Longitude are Required!!!');
 		return;
 	}
-	console.log('gettingNearByMoodLocations');
-	// Moods.find({
-	// 	"location": {
-	// 		$near: {
-	// 			$geometry: {
-	// 				type: "Point" ,
-	// 				coordinates: [ lng , lat ]
-	// 			},
-	// 			$maxDistance: 1000000,
-	// 		}
-	// 	}
- 	// })
+
 	Moods.find({
 		"location": {
 			$near: {
@@ -62,26 +49,10 @@ const getNearByMoodLocations = asyncHandler(async (req, res) => {
 		"username": "123",
 		"mood": "Happy",
  	})
-	// Moods.aggregate([
-	// 	{
-	// 		$geoNear: {
-	// 			 near: { type: "Point", coordinates: [ lng , lat ] },
-	// 			 distanceField: "dist.calculated",
-	// 			 maxDistance: 1000000,
-	// 			 minDistance: 1,
-	// 			 query: { mood: "Happy", username: req.user.name },
-	// 			 includeLocs: "dist.location",
-	// 			 spherical: true
-	// 		}
-	// 	}
- 	// ])
-	.then(item => {
-		console.log('item = ', item);
-		res.send(item);
-	})
-	.catch(err => {
-		console.log('err = ', err);
-		res.status(400).json(err)
+	.then(item => res.send(item))
+	.catch(error => {
+		logger.log('error', 'Moods Controller getNearByMoodLocations error: ', new Error(error));
+		res.status(400).json(error)
 	});
 });
 
@@ -109,12 +80,14 @@ const postMoods = asyncHandler(async (req, res) => {
 		new Moods(data)
 			.save()
 			.then(item => res.send(item))
-			.catch(err => res.status(400).json(err))
+			.catch(error => {
+				logger.log('error', 'Moods Controller postMoods error: ', new Error(error));
+				res.status(400).json(error)
+			});
 	}
 	catch (error) {
-		console.log('error = ', error);
-		res.status(500);
-		res.send(error);
+		logger.log('error', 'Moods Controller postMoods error: ', new Error(error));
+		res.status(500).send(error);
 	}
 })
 
